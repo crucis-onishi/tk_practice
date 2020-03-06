@@ -20,6 +20,7 @@ class Application(tk.Frame):
 
         # 変数定義
         self.question_number = 0
+        self.score = 0
         self.sentence_text = tk.StringVar()
 
         # 実行内容
@@ -37,15 +38,11 @@ class Application(tk.Frame):
         bg_img.create_image(400, 300, image=self.haikei)
 
         # 得点版
-        label = tk.Label(self, relief=tk.RIDGE, width=17, height=3, text="得点\n" + "33.03", font=("MSゴシック", "20", "bold"), bg="white")
+        label = tk.Label(self, relief=tk.RIDGE, width=17, height=3, text="得点\n" + str(round(self.score, 2)), font=("MSゴシック", "20", "bold"), bg="white")
         label.place(x=500, y=10)
 
     # create_questionメソッドを定義
     def create_question(self):
-
-        # 出題フレーム
-        self.quiz_frame = tk.Frame(self, relief=tk.RIDGE, bd=2, width=500, height=600)
-        self.quiz_frame.place(x=0, y=0)
 
         # 第〇問
         question_number_label = tk.Label(self, relief=tk.RIDGE, width=28, height=1, anchor=tk.N, text="第" + str(self.question_number + 1) + "問", font=("MSゴシック", "20", "bold"), bg="white")
@@ -53,7 +50,7 @@ class Application(tk.Frame):
 
         # 問題文
         self.sentence_text.set(questions[self.question_number]["問題文"]) # sentence_textに文字列代入
-        sentence = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.NW, justify="left", wraplength=470,textvariable=self.sentence_text,font=("MSゴシック", "20", "bold"), bg="white")
+        sentence = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.NW, justify="left", wraplength=470, textvariable=self.sentence_text,font=("MSゴシック", "20", "bold"), bg="white")
         sentence.place(x=10, y=60)
 
         # 選択肢
@@ -65,6 +62,13 @@ class Application(tk.Frame):
                 incorrect_button = tk.Button(self, width=28, text=choices, font=("MSゴシック", "20", "bold"), bg="white", command=self.incorrect)
                 incorrect_button.place(x=10, y=350 + (i * 60))
 
+    # create_resultメソッドを定義
+    def create_result(self):
+        # 問題文
+        result = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.CENTER, wraplength=470,text="問題は以上です。\nお疲れさまでした。",font=("MSゴシック", "20", "bold"), bg="white")
+        result.place(x=10, y=60)
+
+
     # 選択肢削除メソッドを定義
     def destroy_choices(self,parent):
         children = parent.winfo_children()
@@ -74,6 +78,7 @@ class Application(tk.Frame):
     # 選択肢ボタンが押された時の処理
     def correct(self):
         self.sentence_text.set("正解！")
+        self.score += 100 / len(questions)
         self.after(1500, self.next)
 
     def incorrect(self):
@@ -85,9 +90,13 @@ class Application(tk.Frame):
         self.question_number += 1
         print(self.question_number)
 
-        # 問題をアップデート
-        self.destroy_choices(self.quiz_frame)
-        self.create_question()
+        self.destroy_choices(self) # フレームを削除
+        self.create_widget() # フレームを再生成
+
+        if self.question_number < len(questions):
+            self.create_question() # 次の問題を描画
+        else:
+            self.create_result() # リザルト画面を描画
 
 # メインの処理
 if __name__ == "__main__":
