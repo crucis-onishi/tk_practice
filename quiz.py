@@ -1,13 +1,11 @@
-# 選択肢部分をパーツ化すべし
-
 import tkinter as tk
 import threading
 import time
 
 questions = [
-                {"問題文":"球磨川禊の過負荷は次のうちどれ？", "選択肢":["大嘘憑き", "手のひら孵し", "光化静翔", "致死武器"], "正解":1},
-                {"問題文":"安心院なじみのスキルは次のうちどれ？", "選択肢":["大嘘憑き", "手のひら孵し", "光化静翔"], "正解":2},
-                {"問題文":"ミスターアンノウンのスキルは次のうちどれ？", "選択肢":["テスト", "手のひら孵し", "光化静翔", "致死武器"], "正解":3}
+                {"問題文":"この本のタイトルはなんでしょう？", "選択肢":["Pythonの教科書", "ゼロから学ぶPython", "プログラミングはじめの一歩", "本は本でも食べられない本"], "正解":3},
+                {"問題文":"次のうちPythonに当てはまるのは？", "選択肢":["静的型付け言語", "動的型付け言語", "オレ的カッコつけ言語"], "正解":2},
+                {"問題文":"次のうちPythonに当てはまるのは？", "選択肢":["シンプルで扱いやすい汎用言語", "国産のプログラミング言語", "マークアップ言語の1つ", "ブラウザ上で動作するスクリプト言語"], "正解":1}
             ]
 
  # tk.Frameを継承したApplicationクラスを作成
@@ -20,8 +18,10 @@ class Application(tk.Frame):
 
         # 変数定義
         self.question_number = 0
-        self.score = 0
         self.sentence_text = tk.StringVar()
+        self.score = 0.00
+        self.score_text = tk.StringVar()
+        self.score_text.set("得点\n0.00")
 
         # 実行内容
         self.pack()
@@ -38,7 +38,7 @@ class Application(tk.Frame):
         bg_img.create_image(400, 300, image=self.haikei)
 
         # 得点版
-        label = tk.Label(self, relief=tk.RIDGE, width=17, height=3, text="得点\n" + str(round(self.score, 2)), font=("MSゴシック", "20", "bold"), bg="white")
+        label = tk.Label(self, relief=tk.RIDGE, width=17, height=3, textvariable=self.score_text, font=("MSゴシック", "20", "bold"), bg="white")
         label.place(x=500, y=10)
 
     # create_questionメソッドを定義
@@ -79,6 +79,7 @@ class Application(tk.Frame):
     def correct(self):
         self.sentence_text.set("正解！")
         self.score += 100 / len(questions)
+        self.score_text.set("得点\n" + str(round(self.score, 2)))
         self.after(1500, self.next)
 
     def incorrect(self):
@@ -88,8 +89,6 @@ class Application(tk.Frame):
     # 正解不正解表示後の処理
     def next(self):
         self.question_number += 1
-        print(self.question_number)
-
         self.destroy_choices(self) # フレームを削除
         self.create_widget() # フレームを再生成
 
