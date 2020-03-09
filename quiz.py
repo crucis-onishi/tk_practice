@@ -68,7 +68,7 @@ class Application(tk.Frame):
 
 
     # フレームの子要素削除メソッドを定義
-    def destroy_children(self,parent):
+    def destroy_widgets(self,parent):
         children = parent.winfo_children()
         for child in children:
             child.destroy()
@@ -87,7 +87,7 @@ class Application(tk.Frame):
     # 正解不正解表示後の処理
     def next(self):
         self.question_number += 1
-        self.destroy_children(self) # フレームの子要素を全て削除
+        self.destroy_widgets(self) # フレームの子要素を全て削除
         self.create_widget() # ウィジェットを再生成
 
         if self.question_number < len(questions):
