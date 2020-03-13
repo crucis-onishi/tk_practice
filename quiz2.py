@@ -1,11 +1,17 @@
-# 正解ボタンと不正解ボタンをそれぞれ作成するパターン
+# bindメソッドで押されたボタンのテキストを参照して正解不正解を判定するパターン
 
 import tkinter as tk
 
 questions = [
-                {"問題文":"この本のタイトルはなんでしょう？","選択肢":["Pythonの教科書", "ゼロから学ぶPython", "プログラミングはじめの一歩", "本は本でも食べられない本"], "正解":3},
-                {"問題文":"次のうちPythonに当てはまるのは？", "選択肢":["静的型付け言語", "動的型付け言語", "オレ的カッコつけ言語"], "正解":2},
-                {"問題文":"次のうちPythonに当てはまるのは？", "選択肢":["シンプルで扱いやすい汎用言語", "国産のプログラミング言語", "マークアップ言語の1つ", "ブラウザ上で動作するスクリプト言語"], "正解":1}
+                {"問題文":"この本のタイトルはなんでしょう？",
+                    "選択肢":["Pythonの教科書", "ゼロから学ぶPython", "プログラミングはじめの一歩", "本は本でも食べられない本"],
+                    "正解":"プログラミングはじめの一歩"},
+                {"問題文":"次のうちPythonに当てはまるのは？",
+                    "選択肢":["静的型付け言語", "動的型付け言語", "オレ的カッコつけ言語"],
+                    "正解":"動的型付け言語"},
+                {"問題文":"次のうちPythonに当てはまるのは？",
+                    "選択肢":["シンプルで扱いやすい汎用言語", "国産のプログラミング言語", "マークアップ言語の1つ", "ブラウザ上で動作するスクリプト言語"],
+                    "正解":"シンプルで扱いやすい汎用言語"}
             ]
 
  # tk.Frameを継承したApplicationクラスを作成
@@ -54,14 +60,11 @@ class Application(tk.Frame):
         sentence = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.NW, justify="left", wraplength=470, textvariable=self.sentence_text,font=("游ゴシック体", "20", "bold"), bg="white")
         sentence.place(x=10, y=60)
 
-        # 選択肢
+        # 選択肢ボタン
         for i,choice in enumerate(questions[self.question_number]["選択肢"]):
-            if i + 1 == questions[self.question_number]["正解"]:
-                correct_button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white", command=self.correct)
-                correct_button.place(x=10, y=350 + (i * 60))
-            else:
-                incorrect_button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white", command=self.incorrect)
-                incorrect_button.place(x=10, y=350 + (i * 60))
+            button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white")
+            button.bind("<Button-1>", self.button_clicked)
+            button.place(x=10, y=350 + (i * 60))
 
     # create_resultメソッドを定義
     def create_result(self):
@@ -69,21 +72,15 @@ class Application(tk.Frame):
         result = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.CENTER, wraplength=470,text="問題は以上です。\nお疲れさまでした。",font=("游ゴシック体", "20", "bold"), bg="white")
         result.place(x=10, y=60)
 
-    # フレームの子要素削除メソッドを定義
-    def destroy_widgets(self,parent):
-        children = parent.winfo_children()
-        for child in children:
-            child.destroy()
-
     # 選択肢ボタンが押された時の処理
-    def correct(self):
-        self.sentence_text.set("正解！")
-        self.score += self.allocate_points
-        self.score_text.set("得点\n" + str(round(self.score, 2)))
-        self.after(1500, self.next)
+    def button_clicked(self, event):
+        if event.widget["text"] == questions[self.question_number]["正解"]:
+            self.sentence_text.set("正解！")
+            self.score += self.allocate_points
+            self.score_text.set("得点\n" + str(round(self.score, 2)))
+        else:
+            self.sentence_text.set("不正解！")
 
-    def incorrect(self):
-        self.sentence_text.set("不正解！")
         self.after(1500, self.next)
 
     # 正解不正解表示後の処理
@@ -96,6 +93,12 @@ class Application(tk.Frame):
             self.create_question() # 次の問題を描画
         else:
             self.create_result() # リザルト画面を描画
+
+    # フレームの子要素削除メソッドを定義
+    def destroy_widgets(self,parent):
+        children = parent.winfo_children()
+        for child in children:
+            child.destroy()
 
 # メインの処理
 if __name__ == "__main__":
