@@ -1,4 +1,4 @@
-# bindメソッドで押されたボタンのテキストを参照して正解不正解を判定するパターン
+# bindメソッドを使わずcommandでやるパターン（callback関数にテキストを渡す）
 
 import tkinter as tk
 
@@ -59,8 +59,7 @@ class Application(tk.Frame):
         # 選択肢ボタン
         self.buttons = []
         for i,choice in enumerate(questions[self.question_number]["選択肢"]):
-            button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white")
-            button.bind("<Button-1>", self.button_clicked)
+            button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white", command=self.button_clicked(choice))
             button.place(x=10, y=350 + (i * 60))
             self.buttons.append(button)
 
@@ -76,16 +75,18 @@ class Application(tk.Frame):
             button["state"] = tk.DISABLED
 
     # 選択肢ボタンが押された時の処理
-    def button_clicked(self, event):
-        self.button_disabled()
-        if event.widget["text"] == questions[self.question_number]["正解"]:
-            self.sentence["text"] = "正解！"
-            self.score += self.allocate_points
-            self.scoreboard["text"] = "得点\n" + str(round(self.score, 2))
-        else:
-            self.sentence["text"] = "不正解！"
+    def button_clicked(self, choice):
+        def x():
+            self.button_disabled()
+            if choice == questions[self.question_number]["正解"]:
+                self.sentence["text"] = "正解！"
+                self.score += self.allocate_points
+                self.scoreboard["text"] = "得点\n" + str(round(self.score, 2))
+            else:
+                self.sentence["text"] = "不正解！"
 
-        self.after(1500, self.next)
+            self.after(1500, self.next)
+        return x
 
     # 正解不正解表示後の処理
     def next(self):
