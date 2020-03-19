@@ -2,18 +2,6 @@
 
 import tkinter as tk
 
-questions = [
-                {"問題文":"この本のタイトルはなんでしょう？",
-                    "選択肢":["Pythonの教科書", "ゼロから学ぶPython", "プログラミングはじめの一歩", "本は本でも食べられない本"],
-                    "正解":"プログラミングはじめの一歩"},
-                {"問題文":"次のうちPythonに当てはまるのは？",
-                    "選択肢":["静的型付け言語", "動的型付け言語", "オレ的カッコつけ言語"],
-                    "正解":"動的型付け言語"},
-                {"問題文":"次のうちPythonに当てはまるのは？",
-                    "選択肢":["シンプルで扱いやすい汎用言語", "国産のプログラミング言語", "マークアップ言語の1つ", "ブラウザ上で動作するスクリプト言語"],
-                    "正解":"シンプルで扱いやすい汎用言語"}
-            ]
-
  # tk.Frameを継承したApplicationクラスを作成
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -22,10 +10,23 @@ class Application(tk.Frame):
         # ウィンドウの設定
         self.master.title("クイズPythonアカデミー")
 
+        # クイズの問題文、選択肢、正解のテキストを定義
+        self.questions = [
+                        {"問題文":"株式会社インプレスR&Dが刊行展開している、技術系商業書籍のシリーズ名は次のうちどれ？",
+                            "選択肢":["技術の庭シリーズ", "技術の山シリーズ", "技術の泉シリーズ", "技術の草原シリーズ"],
+                            "正解":"技術の泉シリーズ"},
+                        {"問題文":"次のうちPythonに当てはまるのは？",
+                            "選択肢":["静的型付け言語", "動的型付け言語", "オレ的カッコつけ言語"],
+                            "正解":"動的型付け言語"},
+                        {"問題文":"次のうちPythonに当てはまるのは？",
+                            "選択肢":["シンプルで扱いやすい汎用言語", "国産のプログラミング言語", "マークアップ言語の1つ", "ブラウザ上で動作するスクリプト言語"],
+                            "正解":"シンプルで扱いやすい汎用言語"}
+                    ]
+
         # 変数定義
-        self.question_number = 0
-        self.score = 0.00
-        self.allocate_points = 100 / len(questions)
+        self.question_number = 0 # 現在が何問目かのカウント
+        self.score = 0.00 # ユーザーの現在までの得点
+        self.allocate_points = 100 / len(self.questions) # 1問当たりの配点
 
         # 実行内容
         self.pack()
@@ -50,22 +51,19 @@ class Application(tk.Frame):
         self.question_number_label.place(x=10, y=10)
 
         # 問題文
-        self.sentence = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.NW, justify="left", wraplength=470, text=questions[self.question_number]["問題文"], font=("游ゴシック体", "20", "bold"), bg="white")
+        self.sentence = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.NW, justify="left", wraplength=470, text=self.questions[self.question_number]["問題文"], font=("游ゴシック体", "20", "bold"), bg="white")
         self.sentence.place(x=10, y=60)
 
     # create_buttonsメソッドを定義
     def create_buttons(self):
-
-        # 選択肢ボタン
         self.buttons = []
-        for i,choice in enumerate(questions[self.question_number]["選択肢"]):
+        for i,choice in enumerate(self.questions[self.question_number]["選択肢"]):
             button = tk.Button(self, width=28, text=choice, font=("游ゴシック体", "20", "bold"), bg="white", command=self.button_clicked(choice))
             button.place(x=10, y=350 + (i * 60))
             self.buttons.append(button)
 
     # create_resultメソッドを定義
     def create_result(self):
-        # 問題文
         result = tk.Label(self, relief=tk.RIDGE, width=28, height=8,anchor=tk.CENTER, wraplength=470,text="問題は以上です。\nお疲れさまでした。",font=("游ゴシック体", "20", "bold"), bg="white")
         result.place(x=10, y=60)
 
@@ -74,11 +72,11 @@ class Application(tk.Frame):
         for button in self.buttons:
             button["state"] = tk.DISABLED
 
-    # 選択肢ボタンが押された時の処理
+    # 選択肢ボタンが押された時の処理（正誤判定）
     def button_clicked(self, choice):
         def x():
             self.button_disabled()
-            if choice == questions[self.question_number]["正解"]:
+            if choice == self.questions[self.question_number]["正解"]:
                 self.sentence["text"] = "正解！"
                 self.score += self.allocate_points
                 self.scoreboard["text"] = "得点\n" + str(round(self.score, 2))
@@ -93,16 +91,16 @@ class Application(tk.Frame):
         self.question_number += 1
         self.destroy_buttons() # 選択肢ボタンをすべて削除
 
-        if self.question_number < len(questions):
+        if self.question_number < len(self.questions):
             self.question_number_label["text"] = "第" + str(self.question_number + 1) + "問" # 何問目かを更新
-            self.sentence["text"] = questions[self.question_number]["問題文"] # 問題文を更新
-            self.create_buttons() # 次の問題を描画
+            self.sentence["text"] = self.questions[self.question_number]["問題文"] # 問題文を更新
+            self.create_buttons() # 次の選択肢ボタンを生成・配置
         else:
             self.question_number_label.destroy()
             self.sentence.destroy()
             self.create_result() # リザルト画面を描画
 
-    # ボタンを削除する処理
+    # 選択肢ボタンをすべて削除する処理
     def destroy_buttons(self):
         for button in self.buttons:
             button.destroy()
