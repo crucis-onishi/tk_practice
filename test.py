@@ -1,4 +1,6 @@
 import tkinter as tk
+import time
+import math
 
  # tk.Frameを継承したApplicationクラスを作成
 class Application(tk.Frame):
@@ -10,9 +12,14 @@ class Application(tk.Frame):
         master.geometry("430x280") # タイマーの幅は430x280
 
         # 変数定義
+        self.timer_on = False # タイマーの状態
+        self.start_time = 0 # 開始時間
         self.set_time = 0 # セット時間
+        self.elapsed_time = 0 # 経過時間
+        self.left_time = 0 # 残り時間
         self.left_min = 0 # 残り時間（分）
         self.left_sec = 0 # 残り時間（秒）
+        self.after_id = 0 # after_id変数を定義
 
         # 実行内容
         self.pack()
@@ -46,7 +53,7 @@ class Application(tk.Frame):
         self.reset_button.place(x=290, y=100)
 
         # スタート/ストップボタン
-        start_button = tk.Button(self.canvas_bg, width=27, height=2, text="スタート/ストップ", font=("MSゴシック体", "18","bold"))
+        start_button = tk.Button(self.canvas_bg, width=27, height=2, text="スタート/ストップ", font=("MSゴシック体", "18","bold"), command=self.start_button_clicked)
         start_button.place(x=10, y=190)
 
 # 各ボタンを押した時の処理
@@ -65,7 +72,7 @@ class Application(tk.Frame):
             self.left_sec += 1 # 残り時間（秒）をプラス
             self.update_sec_text() # 秒の表示更新
 
-    # resetボタンを離した時
+    # resetボタンを押した時
     def reset_button_clicked(self):
         self.set_time = 0 # セット時間をリセット
         self.left_min = 0 # 残り時間（分）をリセット
@@ -74,7 +81,57 @@ class Application(tk.Frame):
         self.update_min_text() # 分の表示更新
         self.update_sec_text() # 秒の表示更新
 
+    #startボタンを押した時
+    def start_button_clicked(self):
+
+        if self.set_time >= 1:
+
+            if self.timer_on == False:
+                self.timer_on = True
+
+                # 各種ボタンを押せなくする
+                self.min_button["state"] = tk.DISABLED
+                self.sec_button["state"] = tk.DISABLED
+                self.reset_button["state"] = tk.DISABLED
+
+                self.start_time =time.time() # 開始時間を代入
+                self.update_time() # updateTime関数を実行
+
+            elif self.timer_on == True:
+                self.timer_on = False
+
+                # 各種ボタンを押せるようにする
+                self.min_button["state"] = tk.NORMAL
+                self.sec_button["state"] = tk.NORMAL
+                self.reset_button["state"] = tk.NORMAL
+
+                self.set_time = self.left_time
+                app.after_cancel(self.after_id)
+
 # 個別の処理
+
+    # 時間更新処理
+    def update_time(self):
+        self.elapsed_time = time.time() - self.start_time  # 経過時間を計算
+        self.left_time = self.set_time - self.elapsed_time # 残り時間を計算
+        self.left_min = math.floor(self.left_time // 60) # 残り時間（分）を計算
+        self.left_sec = math.floor(self.left_time % 60) # 残り時間（秒）を計算
+
+        self.update_min_text() # 分の表示更新
+        self.update_sec_text() # 秒の表示更新
+
+        if self.left_time > 0.1:
+            self.after_id = self.after(10, self.update_time)
+        else:
+            self.timer_on = False
+
+            # 各種ボタンを押せるようにする
+            self.min_button["state"] = tk.NORMAL
+            self.sec_button["state"] = tk.NORMAL
+            self.reset_button["state"] = tk.NORMAL
+
+            self.set_time = self.left_time
+            app.after_cancel(self.after_id)
 
     # 分の表示更新
     def update_min_text(self):
