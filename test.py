@@ -11,6 +11,10 @@ class Application(tk.Frame):
         master.title("キッチンタイマー")
         master.geometry("430x280") # タイマーの幅は430x280
 
+        # 変数定義
+        self.left_min = tk.IntVar(value=0)
+        self.left_sec = tk.IntVar(value=0)
+
         # 実行内容
         self.pack()
         self.create_widget()
@@ -23,8 +27,12 @@ class Application(tk.Frame):
         self.canvas_bg.pack()
 
         # タイマー用のキャンバス
-        self.canvas_timer = tk.Canvas(self.canvas_bg, width=410, height=80, bg="lightgreen")
-        self.canvas_timer.place(x=10, y=10)
+        self.canvas_time = tk.Canvas(self.canvas_bg, width=410, height=80, bg="lightgreen")
+        self.canvas_time.place(x=10, y=10)
+
+        # タイマーに数字を表示
+        self.canvas_time.create_text(250,40,text=str(self.left_min.get()).zfill(2) + "：", font=("MSゴシック体", "36", "bold"), tag="min_text", anchor="e") # 分を表示
+        self.canvas_time.create_text(250,40,text=str(self.left_sec.get()).zfill(2), font=("MSゴシック体", "36", "bold"), tag="sec_text", anchor="w") # 秒を表示
 
         # 分ボタン
         self.min_button = tk.Button(self.canvas_bg, width=8, height=2, text="分", font=("MSゴシック体", "18","bold"))
