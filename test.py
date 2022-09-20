@@ -12,8 +12,8 @@ class Application(tk.Frame):
         master.geometry("430x280") # タイマーの幅は430x280
 
         # 変数定義
-        self.left_min = tk.IntVar(value=0)
-        self.left_sec = tk.IntVar(value=0)
+        self.left_min = 0 # 残り時間（分）
+        self.left_sec = 0 # 残り時間（秒）
 
         # 実行内容
         self.pack()
@@ -31,8 +31,8 @@ class Application(tk.Frame):
         self.canvas_time.place(x=10, y=10)
 
         # タイマーに数字を表示
-        self.canvas_time.create_text(250,40,text=str(self.left_min.get()).zfill(2) + "：", font=("MSゴシック体", "36", "bold"), tag="min_text", anchor="e") # 分を表示
-        self.canvas_time.create_text(250,40,text=str(self.left_sec.get()).zfill(2), font=("MSゴシック体", "36", "bold"), tag="sec_text", anchor="w") # 秒を表示
+        self.canvas_time.create_text(250,40,text=str(self.left_min).zfill(2) + "：", font=("MSゴシック体", "36", "bold"), tag="min_text", anchor="e") # 分を表示
+        self.canvas_time.create_text(250,40,text=str(self.left_sec).zfill(2), font=("MSゴシック体", "36", "bold"), tag="sec_text", anchor="w") # 秒を表示
 
         # 分ボタン
         self.min_button = tk.Button(self.canvas_bg, width=8, height=2, text="分", font=("MSゴシック体", "18","bold"))
